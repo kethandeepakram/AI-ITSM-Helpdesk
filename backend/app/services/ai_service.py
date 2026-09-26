@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import re
 
@@ -6,6 +7,8 @@ from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 MODEL_NAME = os.getenv(
     "HF_LLM_MODEL",
@@ -283,5 +286,6 @@ def analyze_ticket(message: str):
     """
     try:
         return _analyze_with_llm(message)
-    except Exception:
+    except Exception as exc:
+        logger.exception("Hugging Face LLM analysis failed: %s", exc)
         return _rule_based_analysis(message)
