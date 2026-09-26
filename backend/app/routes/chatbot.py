@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 from app.services.ai_service import analyze_ticket
 from app.services.rag_service import search_knowledge_base
+from app.services.llm_service import generate_ai_response
 
 
 router = APIRouter(
@@ -30,18 +31,30 @@ def chat(request: ChatRequest):
     if knowledge_results:
         knowledge_base = knowledge_results[0]
 
-    # 4. Return AI analysis + RAG result
+    # 4. Generate a grounded natural-language response with the
+    #    configured Hugging Face open-source LLM.
+    ai_response = generate_ai_response(
+        message=request.message,
+        analysis=analysis,
+        knowledge_base=knowledge_base
+    )
+
+    fallback_response = (
+        f"I identified this as a "
+        f"{analysis['subcategory']} issue. "
+        f"Category: {analysis['category']}. "
+        f"Priority: {analysis['priority']}."
+    )
+
     return {
         "message": request.message,
-
-        "response": (
-            f"I identified this as a "
-            f"{analysis['subcategory']} issue. "
-            f"Category: {analysis['category']}. "
-            f"Priority: {analysis['priority']}."
+        "response": fallback_response,
+        "ai_response": ai_response or fallback_response,
+        "ai_model": (
+            "Hugging Face open-source LLM"
+            if ai_response
+            else "Rule-based fallback"
         ),
-
         **analysis,
-
         "knowledge_base": knowledge_base
     }
