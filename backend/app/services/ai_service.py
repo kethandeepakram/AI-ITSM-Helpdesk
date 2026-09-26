@@ -94,8 +94,10 @@ def analyze_ticket(message: str):
 
         # Detect commonly requested software
         software_list = [
-            "vs code",
             "visual studio code",
+            "vs code",
+            "microsoft teams",
+            "teams",
             "python",
             "java",
             "node.js",
@@ -130,6 +132,10 @@ def analyze_ticket(message: str):
             software_name = "IntelliJ IDEA"
         elif software_name == "intellij idea":
             software_name = "IntelliJ IDEA"
+        elif software_name == "microsoft teams":
+            software_name = "Microsoft Teams"
+        elif software_name == "teams":
+            software_name = "Microsoft Teams"
 
     # Determine whether automation can be attempted
     automation_possible = (
