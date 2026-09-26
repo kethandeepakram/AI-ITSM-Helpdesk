@@ -12,6 +12,9 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 
+VECTOR_INDEX = os.getenv("MONGODB_VECTOR_INDEX")
+VECTOR_PATH = os.getenv("MONGODB_VECTOR_PATH", "embedding")
+
 if not HF_TOKEN:
     raise RuntimeError("HF_TOKEN is not configured in the .env file")
 
