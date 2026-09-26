@@ -58,6 +58,71 @@ def get_query_embedding(query: str):
     return np.array(embedding, dtype=float).reshape(-1)
 
 
+def _search_atlas_vector(query_embedding, query_words):
+    if not VECTOR_INDEX:
+        return None
+
+    try:
+        db = get_database()
+        collection = db["knowledge_articles"]
+
+        pipeline = [
+            {
+                "$vectorSearch": {
+                    "index": VECTOR_INDEX,
+                    "path": VECTOR_PATH,
+                    "queryVector": query_embedding.tolist(),
+                    "numCandidates": 50,
+                    "limit": 5
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "id": 1,
+                    "title": 1,
+                    "category": 1,
+                    "keywords": 1,
+                    "content": 1,
+                    "score": {
+                        "$meta": "vectorSearchScore"
+                    }
+                }
+            }
+        ]
+
+        results = []
+
+        for article in collection.aggregate(pipeline):
+            vector_score = float(article.pop("score", 0.0))
+
+            keywords = [
+                str(keyword).lower()
+                for keyword in article.get("keywords", [])
+            ]
+
+            keyword_boost = sum(
+                0.10
+                for word in query_words
+                if any(
+                    word == keyword
+                    or word in keyword
+                    or keyword in word
+                    for keyword in keywords
+                )
+            )
+
+            results.append({
+                "article": article,
+                "score": round(vector_score + min(keyword_boost, 0.40), 4)
+            })
+
+        return results
+
+    except Exception:
+        return None
+
+
 def search_knowledge_base(query: str):
     db = get_database()
     collection = db["knowledge_articles"]
@@ -79,6 +144,18 @@ def search_knowledge_base(query: str):
         for word in query.split()
         if len(word.strip(".,!?;:()[]{}")) > 1
     )
+
+    atlas_results = _search_atlas_vector(
+        query_embedding,
+        query_words
+    )
+
+    if atlas_results is not None:
+        atlas_results.sort(
+            key=lambda item: item["score"],
+            reverse=True
+        )
+        return atlas_results
 
     results = []
 
