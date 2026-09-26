@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 MODEL_NAME = os.getenv(
     "HF_LLM_MODEL",
-    "Qwen/Qwen2.5-1.5B-Instruct"
+    "Qwen/Qwen3-4B-Instruct-2507"
 )
 
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -21,7 +21,7 @@ if not HF_TOKEN:
     raise RuntimeError("HF_TOKEN is not configured in the .env file")
 
 client = InferenceClient(
-    provider="hf-inference",
+    provider="auto",
     api_key=HF_TOKEN
 )
 
