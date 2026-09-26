@@ -97,16 +97,21 @@ def create_ticket(message: str):
 
             # Update ticket based on automation result
             if automation_result["success"]:
+                update_fields = {
+                    "status": "Resolved",
+                    "updated_at": datetime.utcnow(),
+                    "automation_status": automation_result["status"],
+                    "automation_action": action
+                }
+
+                if automation_result.get("request_id"):
+                    update_fields["provisioning_request_id"] = (
+                        automation_result["request_id"]
+                    )
+
                 collection.update_one(
                     {"ticket_id": ticket_id},
-                    {
-                        "$set": {
-                            "status": "Resolved",
-                            "updated_at": datetime.utcnow(),
-                            "automation_status": "Success",
-                            "automation_action": action
-                        }
-                    }
+                    {"$set": update_fields}
                 )
 
     # 5. Return complete result
