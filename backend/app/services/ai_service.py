@@ -10,10 +10,9 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-MODEL_NAME = os.getenv(
-    "HF_LLM_MODEL",
-    "Qwen/Qwen3-4B-Instruct-2507"
-)
+# Keep the production model fixed so an outdated Render environment variable
+# cannot override it with an unsupported model.
+MODEL_NAME = "Qwen/Qwen3-4B-Instruct-2507"
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 
@@ -21,7 +20,7 @@ if not HF_TOKEN:
     raise RuntimeError("HF_TOKEN is not configured in the .env file")
 
 client = InferenceClient(
-    provider="auto",
+    provider="nscale",
     api_key=HF_TOKEN
 )
 
