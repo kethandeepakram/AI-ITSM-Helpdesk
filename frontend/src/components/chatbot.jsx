@@ -46,7 +46,7 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      const chatResponse = await fetch(\`\${API_URL}/api/chat\`, {
+      const chatResponse = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -58,7 +58,7 @@ export default function Chatbot() {
         throw new Error(chatData.detail || "AI chatbot request failed");
       }
 
-      const ticketResponse = await fetch(\`\${API_URL}/api/tickets\`, {
+      const ticketResponse = await fetch(`${API_URL}/api/tickets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -75,62 +75,62 @@ export default function Chatbot() {
       let botMessage = "✅ IT issue analyzed successfully.\\n\\n";
 
       if (chatData.ai_response) {
-        botMessage += \`🤖 AI Assistant: \${chatData.ai_response}\\n\`;
-        botMessage += \`🧠 AI Engine: \${chatData.ai_model}\\n\`;
+        botMessage += `🤖 AI Assistant: ${chatData.ai_response}\\n`;
+        botMessage += `🧠 AI Engine: ${chatData.ai_model}\\n`;
       }
 
-      botMessage += \`🎫 Ticket ID: \${ticket.ticket_id}\\n\`;
-      botMessage += \`📌 Status: \${ticket.status}\\n\`;
-      botMessage += \`📂 Category: \${ticket.category}\\n\`;
-      botMessage += \`🔎 Issue: \${ticket.subcategory}\\n\`;
-      botMessage += \`⚡ Priority: \${ticket.priority}\\n\`;
-      botMessage += \`🚨 Urgency: \${ticket.urgency}\\n\`;
-      botMessage += \`👨‍💻 Assigned to: \${ticket.assignment_group}\\n\`;
-      botMessage += \`\\n💡 Suggested Action: \${ticket.suggested_action}\`;
+      botMessage += `🎫 Ticket ID: ${ticket.ticket_id}\\n`;
+      botMessage += `📌 Status: ${ticket.status}\\n`;
+      botMessage += `📂 Category: ${ticket.category}\\n`;
+      botMessage += `🔎 Issue: ${ticket.subcategory}\\n`;
+      botMessage += `⚡ Priority: ${ticket.priority}\\n`;
+      botMessage += `🚨 Urgency: ${ticket.urgency}\\n`;
+      botMessage += `👨‍💻 Assigned to: ${ticket.assignment_group}\\n`;
+      botMessage += `\\n💡 Suggested Action: ${ticket.suggested_action}`;
 
       if (chatData.knowledge_base) {
         const topResult = chatData.knowledge_base;
         const article = topResult.article;
 
         botMessage += "\\n\\n📚 Knowledge Base";
-        botMessage += \`\\n📖 Article: \${article.title}\`;
-        botMessage += \`\\n📊 Relevance Score: \${topResult.score}\`;
-        botMessage += \`\\n💡 Solution: \${article.content}\`;
+        botMessage += `\\n📖 Article: ${article.title}`;
+        botMessage += `\\n📊 Relevance Score: ${topResult.score}`;
+        botMessage += `\\n💡 Solution: ${article.content}`;
       }
 
       if (ticket.automation) {
         botMessage += "\\n\\n🤖 Automation";
-        botMessage += \`\\n✅ Status: \${ticket.automation.status}\`;
-        botMessage += \`\\n🔧 Action: \${ticket.automation.action}\`;
+        botMessage += `\\n✅ Status: ${ticket.automation.status}`;
+        botMessage += `\\n🔧 Action: ${ticket.automation.action}`;
 
         if (ticket.automation.software_name) {
-          botMessage += \`\\n💻 Software: \${ticket.automation.software_name}\`;
+          botMessage += `\\n💻 Software: ${ticket.automation.software_name}`;
         }
 
         if (ticket.automation.request_id) {
-          botMessage += \`\\n🆔 Provisioning Request: \${ticket.automation.request_id}\`;
+          botMessage += `\\n🆔 Provisioning Request: ${ticket.automation.request_id}`;
         }
 
         if (ticket.automation.catalog_status) {
-          botMessage += \`\\n📦 Catalogue: \${ticket.automation.catalog_status}\`;
+          botMessage += `\\n📦 Catalogue: ${ticket.automation.catalog_status}`;
         }
 
         if (ticket.automation.workflow) {
-          botMessage += \`\\n🔄 Workflow: \${ticket.automation.workflow.join(" → ")}\`;
+          botMessage += `\\n🔄 Workflow: ${ticket.automation.workflow.join(" → ")}`;
         }
 
-        botMessage += \`\\n📝 \${ticket.automation.message}\`;
+        botMessage += `\\n📝 ${ticket.automation.message}`;
 
         if (ticket.automation.note) {
-          botMessage += \`\\nℹ️ \${ticket.automation.note}\`;
+          botMessage += `\\nℹ️ ${ticket.automation.note}`;
         }
       }
 
       if (ticket.servicenow) {
         botMessage += "\\n\\n🎫 ServiceNow Integration";
-        botMessage += \`\\n✅ Status: \${ticket.servicenow.status}\`;
-        botMessage += \`\\n📌 Incident: \${ticket.servicenow.incident_number}\`;
-        botMessage += \`\\n📝 \${ticket.servicenow.message}\`;
+        botMessage += `\\n✅ Status: ${ticket.servicenow.status}`;
+        botMessage += `\\n📌 Incident: ${ticket.servicenow.incident_number}`;
+        botMessage += `\\n📝 ${ticket.servicenow.message}`;
       }
 
       setMessages((prev) => [
@@ -144,7 +144,7 @@ export default function Chatbot() {
         ...prev,
         {
           sender: "bot",
-          text: \`❌ Unable to process your request.\\n\\n\${error.message}\`,
+          text: `❌ Unable to process your request.\\n\\n${error.message}`,
         },
       ]);
     } finally {
