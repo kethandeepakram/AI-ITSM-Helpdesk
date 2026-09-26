@@ -45,11 +45,37 @@ function App() {
     <div className="app">
       <Navbar onNavigate={setPage} />
 
-      <main>
-        {renderPage()}
-      </main>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "20px",
+          padding: "20px",
+          minHeight: "calc(100vh - 72px)",
+          boxSizing: "border-box",
+        }}
+      >
+        <main
+          style={{
+            flex: "1 1 auto",
+            minWidth: 0,
+          }}
+        >
+          {renderPage()}
+        </main>
 
-      <Chatbot />
+        <aside
+          style={{
+            width: "360px",
+            flex: "0 0 360px",
+            position: "sticky",
+            top: "20px",
+            alignSelf: "flex-start",
+          }}
+        >
+          <Chatbot />
+        </aside>
+      </div>
     </div>
   );
 }
