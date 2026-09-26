@@ -41,8 +41,7 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      // 1. Send the user's issue to the AI chatbot
-      // This performs AI classification + RAG Knowledge Base search
+      // AI classification + RAG + Hugging Face response
       const chatResponse = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: {
@@ -88,6 +87,11 @@ export default function Chatbot() {
       // 3. Build chatbot response
       let botMessage = "✅ IT issue analyzed successfully.\n\n";
 
+      if (chatData.ai_response) {
+        botMessage += `🤖 AI Assistant: ${chatData.ai_response}\n`;
+        botMessage += `🧠 AI Engine: ${chatData.ai_model}\n`;
+      }
+
       botMessage += `🎫 Ticket ID: ${ticket.ticket_id}\n`;
       botMessage += `📌 Status: ${ticket.status}\n`;
       botMessage += `📂 Category: ${ticket.category}\n`;
@@ -115,10 +119,9 @@ export default function Chatbot() {
           `\n💡 Solution: ${article.content}`;
       }
 
-      // 5. Display Self-Healing Automation result
+      // 5. Display Self-Healing / Provisioning Automation
       if (ticket.automation) {
-        botMessage +=
-          "\n\n🤖 Self-Healing Automation";
+        botMessage += "\n\n🤖 Automation";
 
         botMessage +=
           `\n✅ Status: ${ticket.automation.status}`;
@@ -126,8 +129,33 @@ export default function Chatbot() {
         botMessage +=
           `\n🔧 Action: ${ticket.automation.action}`;
 
+        if (ticket.automation.software_name) {
+          botMessage +=
+            `\n💻 Software: ${ticket.automation.software_name}`;
+        }
+
+        if (ticket.automation.request_id) {
+          botMessage +=
+            `\n🆔 Provisioning Request: ${ticket.automation.request_id}`;
+        }
+
+        if (ticket.automation.catalog_status) {
+          botMessage +=
+            `\n📦 Catalogue: ${ticket.automation.catalog_status}`;
+        }
+
+        if (ticket.automation.workflow) {
+          botMessage +=
+            `\n🔄 Workflow: ${ticket.automation.workflow.join(" → ")}`;
+        }
+
         botMessage +=
           `\n📝 ${ticket.automation.message}`;
+
+        if (ticket.automation.note) {
+          botMessage +=
+            `\nℹ️ ${ticket.automation.note}`;
+        }
       }
 
       // 6. Display ServiceNow integration result
